@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.LabApplyMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.LabApply">
+        <id column="apply_id" property="applyId"/>
+        <result column="apply_no" property="applyNo"/>
+        <result column="reg_id" property="regId"/>
+        <result column="patient_id" property="patientId"/>
+        <result column="doctor_id" property="doctorId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="clinical_info" property="clinicalInfo"/>
+        <result column="status" property="status"/>
+        <result column="lab_doctor_id" property="labDoctorId"/>
+        <result column="lab_result" property="labResult"/>
+        <result column="lab_value" property="labValue"/>
+        <result column="lab_time" property="labTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="patient_no" property="patientNo"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="doctor_name" property="doctorName"/>
+        <result column="item_name" property="itemName"/>
+        <result column="item_code" property="itemCode"/>
+        <result column="item_price" property="itemPrice"/>
+        <result column="lab_doctor_name" property="labDoctorName"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+        l.apply_id, l.apply_no, l.reg_id, l.patient_id, l.doctor_id, l.item_id,
+        l.clinical_info, l.status, l.lab_doctor_id, l.lab_result, l.lab_value, l.lab_time,
+        l.create_time, l.update_time
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, p.gender, p.age,
+               du.real_name AS doctor_name, li.item_name, li.item_code, li.item_price,
+               lu.real_name AS lab_doctor_name
+        FROM lab_apply l
+        LEFT JOIN patient p ON l.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON l.doctor_id = du.user_id
+        LEFT JOIN lab_item li ON l.item_id = li.item_id
+        LEFT JOIN sys_user lu ON l.lab_doctor_id = lu.user_id
+        WHERE l.apply_id = #{applyId}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, p.gender, p.age,
+               du.real_name AS doctor_name, li.item_name, li.item_code, li.item_price,
+               lu.real_name AS lab_doctor_name
+        FROM lab_apply l
+        LEFT JOIN patient p ON l.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON l.doctor_id = du.user_id
+        LEFT JOIN lab_item li ON l.item_id = li.item_id
+        LEFT JOIN sys_user lu ON l.lab_doctor_id = lu.user_id
+        <where>
+            <if test="status != null and status != ''">AND l.status = #{status}</if>
+            <if test="patientId != null">AND l.patient_id = #{patientId}</if>
+            <if test="doctorId != null">AND l.doctor_id = #{doctorId}</if>
+            <if test="labDoctorId != null">AND l.lab_doctor_id = #{labDoctorId}</if>
+        </where>
+        ORDER BY l.create_time DESC
+    </select>
+
+    <select id="selectByRegId" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, p.gender, p.age,
+               du.real_name AS doctor_name, li.item_name, li.item_code, li.item_price,
+               lu.real_name AS lab_doctor_name
+        FROM lab_apply l
+        LEFT JOIN patient p ON l.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON l.doctor_id = du.user_id
+        LEFT JOIN lab_item li ON l.item_id = li.item_id
+        LEFT JOIN sys_user lu ON l.lab_doctor_id = lu.user_id
+        WHERE l.reg_id = #{regId}
+        ORDER BY l.apply_id
+    </select>
+
+    <select id="selectByPatient" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, p.gender, p.age,
+               du.real_name AS doctor_name, li.item_name, li.item_code, li.item_price,
+               lu.real_name AS lab_doctor_name
+        FROM lab_apply l
+        LEFT JOIN patient p ON l.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON l.doctor_id = du.user_id
+        LEFT JOIN lab_item li ON l.item_id = li.item_id
+        LEFT JOIN sys_user lu ON l.lab_doctor_id = lu.user_id
+        WHERE l.patient_id = #{patientId}
+        <if test="status != null and status != ''">AND l.status = #{status}</if>
+        ORDER BY l.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.LabApply" useGeneratedKeys="true" keyProperty="applyId">
+        INSERT INTO lab_apply (apply_no, reg_id, patient_id, doctor_id, item_id, clinical_info, status)
+        VALUES (#{applyNo}, #{regId}, #{patientId}, #{doctorId}, #{itemId}, #{clinicalInfo}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.LabApply">
+        UPDATE lab_apply
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="labDoctorId != null">lab_doctor_id = #{labDoctorId},</if>
+            <if test="labResult != null">lab_result = #{labResult},</if>
+            <if test="labValue != null">lab_value = #{labValue},</if>
+            <if test="labTime != null">lab_time = #{labTime},</if>
+            <if test="clinicalInfo != null">clinical_info = #{clinicalInfo},</if>
+        </set>
+        WHERE apply_id = #{applyId}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE lab_apply SET status = #{status} WHERE apply_id = #{applyId}
+    </update>
+
+</mapper>

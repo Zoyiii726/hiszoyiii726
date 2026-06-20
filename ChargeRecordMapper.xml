@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.ChargeRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.ChargeRecord">
+        <id column="charge_id" property="chargeId"/>
+        <result column="charge_no" property="chargeNo"/>
+        <result column="patient_id" property="patientId"/>
+        <result column="reg_id" property="regId"/>
+        <result column="charge_type" property="chargeType"/>
+        <result column="relate_id" property="relateId"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="pay_type" property="payType"/>
+        <result column="status" property="status"/>
+        <result column="charge_user_id" property="chargeUserId"/>
+        <result column="refund_user_id" property="refundUserId"/>
+        <result column="refund_time" property="refundTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="charge_user_name" property="chargeUserName"/>
+        <result column="refund_user_name" property="refundUserName"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+        c.charge_id, c.charge_no, c.patient_id, c.reg_id, c.charge_type, c.relate_id,
+        c.total_amount, c.pay_type, c.status, c.charge_user_id, c.refund_user_id,
+        c.refund_time, c.create_time
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, cu.real_name AS charge_user_name, ru.real_name AS refund_user_name
+        FROM charge_record c
+        LEFT JOIN patient p ON c.patient_id = p.patient_id
+        LEFT JOIN sys_user cu ON c.charge_user_id = cu.user_id
+        LEFT JOIN sys_user ru ON c.refund_user_id = ru.user_id
+        WHERE c.charge_id = #{chargeId}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, cu.real_name AS charge_user_name, ru.real_name AS refund_user_name
+        FROM charge_record c
+        LEFT JOIN patient p ON c.patient_id = p.patient_id
+        LEFT JOIN sys_user cu ON c.charge_user_id = cu.user_id
+        LEFT JOIN sys_user ru ON c.refund_user_id = ru.user_id
+        <where>
+            <if test="patientId != null">AND c.patient_id = #{patientId}</if>
+            <if test="chargeType != null and chargeType != ''">AND c.charge_type = #{chargeType}</if>
+            <if test="status != null and status != ''">AND c.status = #{status}</if>
+            <if test="regId != null">AND c.reg_id = #{regId}</if>
+        </where>
+        ORDER BY c.create_time DESC
+    </select>
+
+    <select id="selectByPatient" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, cu.real_name AS charge_user_name, ru.real_name AS refund_user_name
+        FROM charge_record c
+        LEFT JOIN patient p ON c.patient_id = p.patient_id
+        LEFT JOIN sys_user cu ON c.charge_user_id = cu.user_id
+        LEFT JOIN sys_user ru ON c.refund_user_id = ru.user_id
+        WHERE c.patient_id = #{patientId}
+        ORDER BY c.create_time DESC
+    </select>
+
+    <select id="selectByDateRange" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, cu.real_name AS charge_user_name, ru.real_name AS refund_user_name
+        FROM charge_record c
+        LEFT JOIN patient p ON c.patient_id = p.patient_id
+        LEFT JOIN sys_user cu ON c.charge_user_id = cu.user_id
+        LEFT JOIN sys_user ru ON c.refund_user_id = ru.user_id
+        WHERE c.create_time BETWEEN #{startDate} AND #{endDate}
+        ORDER BY c.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.ChargeRecord" useGeneratedKeys="true" keyProperty="chargeId">
+        INSERT INTO charge_record (charge_no, patient_id, reg_id, charge_type, relate_id,
+                                   total_amount, pay_type, status, charge_user_id, refund_user_id, refund_time)
+        VALUES (#{chargeNo}, #{patientId}, #{regId}, #{chargeType}, #{relateId},
+                #{totalAmount}, #{payType}, #{status}, #{chargeUserId}, #{refundUserId}, #{refundTime})
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.ChargeRecord">
+        UPDATE charge_record
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="payType != null">pay_type = #{payType},</if>
+            <if test="refundUserId != null">refund_user_id = #{refundUserId},</if>
+            <if test="refundTime != null">refund_time = #{refundTime},</if>
+        </set>
+        WHERE charge_id = #{chargeId}
+    </update>
+
+</mapper>

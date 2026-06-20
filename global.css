@@ -1,0 +1,171 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, #app {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background-color: #f5f7fa;
+}
+
+/* 登录页面样式 */
+.login-container {
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    width: 400px;
+    padding: 40px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.login-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #409EFF;
+    margin-bottom: 30px;
+}
+
+/* 主布局样式 */
+.home-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-header {
+    height: 60px;
+    background: linear-gradient(90deg, #409EFF 0%, #66b1ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: #fff;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.home-main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.home-aside {
+    width: 200px;
+    background: #304156;
+    overflow-y: auto;
+}
+
+.home-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f0f2f5;
+}
+
+/* 菜单样式 */
+.el-menu {
+    border-right: none;
+    background: #304156;
+}
+
+.el-menu-item, .el-submenu__title {
+    color: #bfcbd9 !important;
+}
+
+.el-menu-item:hover, .el-submenu__title:hover {
+    background: #263445 !important;
+}
+
+.el-menu-item.is-active {
+    background: #409EFF !important;
+    color: #fff !important;
+}
+
+.el-submenu .el-menu {
+    background: #1f2d3d !important;
+}
+
+/* 卡片样式 */
+.page-card {
+    background: #fff;
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #303133;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ebeef5;
+}
+
+/* 表单样式 */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-col {
+    flex: 1;
+}
+
+/* 表格样式 */
+.table-container {
+    margin-top: 20px;
+}
+
+/* 搜索栏样式 */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+}
+
+.search-bar .el-form-item {
+    margin-bottom: 0;
+}
+
+/* 患者信息展示 */
+.patient-info-bar {
+    background: #ecf5ff;
+    border: 1px solid #b3d8ff;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.patient-info-bar span {
+    margin-right: 30px;
+    color: #606266;
+}
+
+.patient-info-bar span strong {
+    color: #303133;
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.MedicineStockLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.MedicineStockLog">
+        <id column="log_id" property="logId"/>
+        <result column="medicine_id" property="medicineId"/>
+        <result column="opt_type" property="optType"/>
+        <result column="quantity" property="quantity"/>
+        <result column="relate_id" property="relateId"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="medicine_name" property="medicineName"/>
+        <result column="medicine_code" property="medicineCode"/>
+        <result column="operator_name" property="operatorName"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="patient_no" property="patientNo"/>
+    </resultMap>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT l.*, m.medicine_name, m.medicine_code, u.real_name AS operator_name,
+               p.patient_name, p.patient_no
+        FROM medicine_stock_log l
+        LEFT JOIN medicine m ON l.medicine_id = m.medicine_id
+        LEFT JOIN prescription pr ON l.relate_id = pr.pres_id
+        LEFT JOIN patient p ON pr.patient_id = p.patient_id
+        LEFT JOIN sys_user u ON l.operator_id = u.user_id
+        <where>
+            <if test="optType != null and optType != ''">AND l.opt_type = #{optType}</if>
+        </where>
+        ORDER BY l.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.MedicineStockLog" useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO medicine_stock_log (medicine_id, opt_type, quantity, relate_id, operator_id, remark)
+        VALUES (#{medicineId}, #{optType}, #{quantity}, #{relateId}, #{operatorId}, #{remark})
+    </insert>
+
+</mapper>

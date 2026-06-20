@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.DepartmentMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.Department">
+        <id column="dept_id" property="deptId"/>
+        <result column="dept_code" property="deptCode"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="dept_type" property="deptType"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM department WHERE dept_id = #{deptId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM department WHERE status = 1 ORDER BY sort_order, dept_id
+    </select>
+
+    <select id="selectByType" resultMap="BaseResultMap">
+        SELECT * FROM department WHERE status = 1 AND dept_type = #{deptType} ORDER BY sort_order, dept_id
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.Department" useGeneratedKeys="true" keyProperty="deptId">
+        INSERT INTO department (dept_code, dept_name, dept_type, sort_order, status)
+        VALUES (#{deptCode}, #{deptName}, #{deptType}, #{sortOrder}, 1)
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.Department">
+        UPDATE department
+        <set>
+            <if test="deptCode != null">dept_code = #{deptCode},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="deptType != null">dept_type = #{deptType},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE dept_id = #{deptId}
+    </update>
+
+    <delete id="deleteById">
+        UPDATE department SET status = 0 WHERE dept_id = #{deptId}
+    </delete>
+
+</mapper>

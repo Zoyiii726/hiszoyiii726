@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.MedicineMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.Medicine">
+        <id column="medicine_id" property="medicineId"/>
+        <result column="medicine_code" property="medicineCode"/>
+        <result column="medicine_name" property="medicineName"/>
+        <result column="medicine_spec" property="medicineSpec"/>
+        <result column="package_unit" property="packageUnit"/>
+        <result column="manufacturer" property="manufacturer"/>
+        <result column="price" property="price"/>
+        <result column="stock" property="stock"/>
+        <result column="dosage_form" property="dosageForm"/>
+        <result column="usage_method" property="usageMethod"/>
+        <result column="dosage" property="dosage"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM medicine WHERE medicine_id = #{medicineId}
+    </select>
+
+    <select id="selectByCode" resultMap="BaseResultMap">
+        SELECT * FROM medicine WHERE medicine_code = #{medicineCode} LIMIT 1
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT * FROM medicine
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (medicine_code LIKE CONCAT('%', #{keyword}, '%')
+                  OR medicine_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            AND status = 1
+        </where>
+        ORDER BY medicine_id
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.Medicine" useGeneratedKeys="true" keyProperty="medicineId">
+        INSERT INTO medicine (medicine_code, medicine_name, medicine_spec, package_unit, manufacturer,
+                              price, stock, dosage_form, usage_method, dosage, status)
+        VALUES (#{medicineCode}, #{medicineName}, #{medicineSpec}, #{packageUnit}, #{manufacturer},
+                #{price}, #{stock}, #{dosageForm}, #{usageMethod}, #{dosage}, 1)
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.Medicine">
+        UPDATE medicine
+        <set>
+            <if test="medicineName != null">medicine_name = #{medicineName},</if>
+            <if test="medicineSpec != null">medicine_spec = #{medicineSpec},</if>
+            <if test="packageUnit != null">package_unit = #{packageUnit},</if>
+            <if test="manufacturer != null">manufacturer = #{manufacturer},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="dosageForm != null">dosage_form = #{dosageForm},</if>
+            <if test="usageMethod != null">usage_method = #{usageMethod},</if>
+            <if test="dosage != null">dosage = #{dosage},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE medicine_id = #{medicineId}
+    </update>
+
+    <update id="updateStock">
+        UPDATE medicine SET stock = stock + #{quantity} WHERE medicine_id = #{medicineId}
+    </update>
+
+    <delete id="deleteById">
+        UPDATE medicine SET status = 0 WHERE medicine_id = #{medicineId}
+    </delete>
+
+</mapper>

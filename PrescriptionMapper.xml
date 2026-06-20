@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.PrescriptionMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.Prescription">
+        <id column="pres_id" property="presId"/>
+        <result column="pres_no" property="presNo"/>
+        <result column="reg_id" property="regId"/>
+        <result column="patient_id" property="patientId"/>
+        <result column="doctor_id" property="doctorId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="patient_no" property="patientNo"/>
+        <result column="doctor_name" property="doctorName"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+        pr.pres_id, pr.pres_no, pr.reg_id, pr.patient_id, pr.doctor_id,
+        pr.status, pr.create_time, pr.update_time
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, du.real_name AS doctor_name
+        FROM prescription pr
+        LEFT JOIN patient p ON pr.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON pr.doctor_id = du.user_id
+        WHERE pr.pres_id = #{presId}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, du.real_name AS doctor_name
+        FROM prescription pr
+        LEFT JOIN patient p ON pr.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON pr.doctor_id = du.user_id
+        <where>
+            <if test="status != null and status != ''">AND pr.status = #{status}</if>
+            <if test="patientId != null">AND pr.patient_id = #{patientId}</if>
+            <if test="doctorId != null">AND pr.doctor_id = #{doctorId}</if>
+        </where>
+        ORDER BY pr.create_time DESC
+    </select>
+
+    <select id="selectByRegId" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, du.real_name AS doctor_name
+        FROM prescription pr
+        LEFT JOIN patient p ON pr.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON pr.doctor_id = du.user_id
+        WHERE pr.reg_id = #{regId}
+        ORDER BY pr.pres_id
+    </select>
+
+    <select id="selectByPatient" resultMap="BaseResultMap">
+        SELECT <include refid="baseColumns"/>,
+               p.patient_name, p.patient_no, du.real_name AS doctor_name
+        FROM prescription pr
+        LEFT JOIN patient p ON pr.patient_id = p.patient_id
+        LEFT JOIN sys_user du ON pr.doctor_id = du.user_id
+        WHERE pr.patient_id = #{patientId}
+        <if test="status != null and status != ''">AND pr.status = #{status}</if>
+        ORDER BY pr.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.Prescription" useGeneratedKeys="true" keyProperty="presId">
+        INSERT INTO prescription (pres_no, reg_id, patient_id, doctor_id, status)
+        VALUES (#{presNo}, #{regId}, #{patientId}, #{doctorId}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.Prescription">
+        UPDATE prescription
+        <set>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE pres_id = #{presId}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE prescription SET status = #{status} WHERE pres_id = #{presId}
+    </update>
+
+</mapper>

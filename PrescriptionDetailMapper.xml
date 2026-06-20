@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.PrescriptionDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.PrescriptionDetail">
+        <id column="detail_id" property="detailId"/>
+        <result column="pres_id" property="presId"/>
+        <result column="medicine_id" property="medicineId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="price" property="price"/>
+        <result column="amount" property="amount"/>
+        <result column="usage_method" property="usageMethod"/>
+        <result column="dosage" property="dosage"/>
+        <result column="medicine_name" property="medicineName"/>
+        <result column="medicine_spec" property="medicineSpec"/>
+        <result column="package_unit" property="packageUnit"/>
+    </resultMap>
+
+    <select id="selectByPresId" resultMap="BaseResultMap">
+        SELECT pd.*, m.medicine_name, m.medicine_spec, m.package_unit
+        FROM prescription_detail pd
+        LEFT JOIN medicine m ON pd.medicine_id = m.medicine_id
+        WHERE pd.pres_id = #{presId}
+        ORDER BY pd.detail_id
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.PrescriptionDetail" useGeneratedKeys="true" keyProperty="detailId">
+        INSERT INTO prescription_detail (pres_id, medicine_id, quantity, price, amount, usage_method, dosage)
+        VALUES (#{presId}, #{medicineId}, #{quantity}, #{price}, #{amount}, #{usageMethod}, #{dosage})
+    </insert>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO prescription_detail (pres_id, medicine_id, quantity, price, amount, usage_method, dosage)
+        VALUES
+        <foreach collection="list" item="d" separator=",">
+            (#{d.presId}, #{d.medicineId}, #{d.quantity}, #{d.price}, #{d.amount}, #{d.usageMethod}, #{d.dosage})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByPresId">
+        DELETE FROM prescription_detail WHERE pres_id = #{presId}
+    </delete>
+
+</mapper>

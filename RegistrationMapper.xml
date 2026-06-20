@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.RegistrationMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.Registration">
+        <id column="reg_id" property="regId"/>
+        <result column="reg_no" property="regNo"/>
+        <result column="patient_id" property="patientId"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="doctor_id" property="doctorId"/>
+        <result column="reg_level" property="regLevel"/>
+        <result column="reg_date" property="regDate"/>
+        <result column="time_slot" property="timeSlot"/>
+        <result column="reg_fee" property="regFee"/>
+        <result column="status" property="status"/>
+        <result column="queue_number" property="queueNumber"/>
+        <result column="charge_user_id" property="chargeUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="patient_no" property="patientNo"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="doctor_name" property="doctorName"/>
+        <result column="id_card" property="idCard"/>
+        <result column="phone" property="phone"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT r.*, p.patient_name, p.patient_no, p.gender, p.age, p.id_card, p.phone,
+               d.dept_name, u.real_name as doctor_name
+        FROM registration r
+        LEFT JOIN patient p ON r.patient_id = p.patient_id
+        LEFT JOIN department d ON r.dept_id = d.dept_id
+        LEFT JOIN sys_user u ON r.doctor_id = u.user_id
+        WHERE r.reg_id = #{regId}
+    </select>
+
+    <select id="selectByRegNo" resultMap="BaseResultMap">
+        SELECT r.*, p.patient_name, p.patient_no, p.gender, p.age, p.id_card, p.phone,
+               d.dept_name, u.real_name as doctor_name
+        FROM registration r
+        LEFT JOIN patient p ON r.patient_id = p.patient_id
+        LEFT JOIN department d ON r.dept_id = d.dept_id
+        LEFT JOIN sys_user u ON r.doctor_id = u.user_id
+        WHERE r.reg_no = #{regNo}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT r.*, p.patient_name, p.patient_no, p.gender, p.age, p.id_card, p.phone,
+               d.dept_name, u.real_name as doctor_name
+        FROM registration r
+        LEFT JOIN patient p ON r.patient_id = p.patient_id
+        LEFT JOIN department d ON r.dept_id = d.dept_id
+        LEFT JOIN sys_user u ON r.doctor_id = u.user_id
+        <where>
+            <if test="patientId != null">AND r.patient_id = #{patientId}</if>
+            <if test="doctorId != null">AND r.doctor_id = #{doctorId}</if>
+            <if test="status != null">AND r.status = #{status}</if>
+        </where>
+        ORDER BY r.create_time DESC
+    </select>
+
+    <select id="selectByDoctorAndDate" resultMap="BaseResultMap">
+        SELECT r.*, p.patient_name, p.patient_no, p.gender, p.age, p.id_card, p.phone,
+               d.dept_name, u.real_name as doctor_name
+        FROM registration r
+        LEFT JOIN patient p ON r.patient_id = p.patient_id
+        LEFT JOIN department d ON r.dept_id = d.dept_id
+        LEFT JOIN sys_user u ON r.doctor_id = u.user_id
+        WHERE r.doctor_id = #{doctorId} AND r.reg_date = #{regDate}
+        <if test="status != null">AND r.status = #{status}</if>
+        ORDER BY r.queue_number
+    </select>
+
+    <select id="selectByPatient" resultMap="BaseResultMap">
+        SELECT r.*, p.patient_name, p.patient_no, p.gender, p.age,
+               d.dept_name, u.real_name as doctor_name
+        FROM registration r
+        LEFT JOIN patient p ON r.patient_id = p.patient_id
+        LEFT JOIN department d ON r.dept_id = d.dept_id
+        LEFT JOIN sys_user u ON r.doctor_id = u.user_id
+        WHERE r.patient_id = #{patientId}
+        ORDER BY r.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.Registration" useGeneratedKeys="true" keyProperty="regId">
+        INSERT INTO registration (reg_no, patient_id, dept_id, doctor_id, reg_level, reg_date, 
+                                  time_slot, reg_fee, status, queue_number, charge_user_id)
+        VALUES (#{regNo}, #{patientId}, #{deptId}, #{doctorId}, #{regLevel}, #{regDate}, 
+                #{timeSlot}, #{regFee}, #{status}, #{queueNumber}, #{chargeUserId})
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.Registration">
+        UPDATE registration
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="queueNumber != null">queue_number = #{queueNumber},</if>
+        </set>
+        WHERE reg_id = #{regId}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE registration SET status = #{status} WHERE reg_id = #{regId}
+    </update>
+
+    <select id="getMaxQueueNumber" resultType="int">
+        SELECT IFNULL(MAX(queue_number), 0) FROM registration
+        WHERE doctor_id = #{doctorId} AND reg_date = #{regDate} AND time_slot = #{timeSlot}
+    </select>
+
+</mapper>

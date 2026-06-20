@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.PatientMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.Patient">
+        <id column="patient_id" property="patientId"/>
+        <result column="patient_no" property="patientNo"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="id_card" property="idCard"/>
+        <result column="phone" property="phone"/>
+        <result column="address" property="address"/>
+        <result column="birthday" property="birthday"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.his.entity.Patient" useGeneratedKeys="true" keyProperty="patientId">
+        INSERT INTO patient (patient_no, patient_name, gender, age, id_card, phone, address, birthday)
+        VALUES (CONCAT('P', DATE_FORMAT(NOW(), '%Y%m%d'), LPAD(FLOOR(RAND() * 10000), 4, '0')),
+                #{patientName}, #{gender}, #{age}, #{idCard}, #{phone}, #{address}, #{birthday})
+    </insert>
+
+    <select id="selectByIdCard" resultMap="BaseResultMap">
+        SELECT * FROM patient WHERE id_card = #{idCard} LIMIT 1
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM patient WHERE patient_id = #{patientId}
+    </select>
+
+    <select id="selectByPatientNo" resultMap="BaseResultMap">
+        SELECT * FROM patient WHERE patient_no = #{patientNo} LIMIT 1
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT * FROM patient
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (patient_no LIKE CONCAT('%', #{keyword}, '%')
+                  OR patient_name LIKE CONCAT('%', #{keyword}, '%')
+                  OR id_card LIKE CONCAT('%', #{keyword}, '%')
+                  OR phone LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="update" parameterType="com.his.entity.Patient">
+        UPDATE patient
+        <set>
+            <if test="patientName != null">patient_name = #{patientName},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+        </set>
+        WHERE patient_id = #{patientId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM patient WHERE patient_id = #{patientId}
+    </delete>
+
+</mapper>

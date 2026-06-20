@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.MedicalRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.MedicalRecord">
+        <id column="record_id" property="recordId"/>
+        <result column="reg_id" property="regId"/>
+        <result column="patient_id" property="patientId"/>
+        <result column="doctor_id" property="doctorId"/>
+        <result column="chief_complaint" property="chiefComplaint"/>
+        <result column="present_illness" property="presentIllness"/>
+        <result column="past_illness" property="pastIllness"/>
+        <result column="physical_exam" property="physicalExam"/>
+        <result column="diagnosis" property="diagnosis"/>
+        <result column="advice" property="advice"/>
+        <result column="disease_code" property="diseaseCode"/>
+        <result column="disease_name" property="diseaseName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="patient_no" property="patientNo"/>
+        <result column="doctor_name" property="doctorName"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT m.*, p.patient_name, p.patient_no, u.real_name AS doctor_name
+        FROM medical_record m
+        LEFT JOIN patient p ON m.patient_id = p.patient_id
+        LEFT JOIN sys_user u ON m.doctor_id = u.user_id
+        WHERE m.record_id = #{recordId}
+    </select>
+
+    <select id="selectByRegId" resultMap="BaseResultMap">
+        SELECT m.*, p.patient_name, p.patient_no, u.real_name AS doctor_name
+        FROM medical_record m
+        LEFT JOIN patient p ON m.patient_id = p.patient_id
+        LEFT JOIN sys_user u ON m.doctor_id = u.user_id
+        WHERE m.reg_id = #{regId}
+        ORDER BY m.record_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectByPatient" resultMap="BaseResultMap">
+        SELECT m.*, p.patient_name, p.patient_no, u.real_name AS doctor_name
+        FROM medical_record m
+        LEFT JOIN patient p ON m.patient_id = p.patient_id
+        LEFT JOIN sys_user u ON m.doctor_id = u.user_id
+        WHERE m.patient_id = #{patientId}
+        ORDER BY m.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.MedicalRecord" useGeneratedKeys="true" keyProperty="recordId">
+        INSERT INTO medical_record (reg_id, patient_id, doctor_id, chief_complaint, present_illness,
+                                    past_illness, physical_exam, diagnosis, advice, disease_code, disease_name)
+        VALUES (#{regId}, #{patientId}, #{doctorId}, #{chiefComplaint}, #{presentIllness},
+                #{pastIllness}, #{physicalExam}, #{diagnosis}, #{advice}, #{diseaseCode}, #{diseaseName})
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.MedicalRecord">
+        UPDATE medical_record
+        <set>
+            <if test="chiefComplaint != null">chief_complaint = #{chiefComplaint},</if>
+            <if test="presentIllness != null">present_illness = #{presentIllness},</if>
+            <if test="pastIllness != null">past_illness = #{pastIllness},</if>
+            <if test="physicalExam != null">physical_exam = #{physicalExam},</if>
+            <if test="diagnosis != null">diagnosis = #{diagnosis},</if>
+            <if test="advice != null">advice = #{advice},</if>
+            <if test="diseaseCode != null">disease_code = #{diseaseCode},</if>
+            <if test="diseaseName != null">disease_name = #{diseaseName},</if>
+        </set>
+        WHERE record_id = #{recordId}
+    </update>
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.his.mapper.ExamItemMapper">
+
+    <resultMap id="BaseResultMap" type="com.his.entity.ExamItem">
+        <id column="item_id" property="itemId"/>
+        <result column="item_code" property="itemCode"/>
+        <result column="item_name" property="itemName"/>
+        <result column="item_price" property="itemPrice"/>
+        <result column="fee_type" property="feeType"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM exam_item WHERE item_id = #{itemId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM exam_item WHERE status = 1 ORDER BY item_id
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT * FROM exam_item
+        <where>
+            status = 1
+            <if test="keyword != null and keyword != ''">
+                AND (item_code LIKE CONCAT('%', #{keyword}, '%') OR item_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY item_id
+    </select>
+
+    <insert id="insert" parameterType="com.his.entity.ExamItem" useGeneratedKeys="true" keyProperty="itemId">
+        INSERT INTO exam_item (item_code, item_name, item_price, fee_type, dept_id, status)
+        VALUES (#{itemCode}, #{itemName}, #{itemPrice}, #{feeType}, #{deptId}, 1)
+    </insert>
+
+    <update id="update" parameterType="com.his.entity.ExamItem">
+        UPDATE exam_item
+        <set>
+            <if test="itemCode != null">item_code = #{itemCode},</if>
+            <if test="itemName != null">item_name = #{itemName},</if>
+            <if test="itemPrice != null">item_price = #{itemPrice},</if>
+            <if test="feeType != null">fee_type = #{feeType},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE item_id = #{itemId}
+    </update>
+
+    <delete id="deleteById">
+        UPDATE exam_item SET status = 0 WHERE item_id = #{itemId}
+    </delete>
+
+</mapper>
