@@ -1,0 +1,23 @@
+{
+  "name": "his-system-frontend",
+  "version": "1.0.0",
+  "description": "云医院HIS系统前端",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.3",
+    "axios": "^0.27.2",
+    "element-ui": "^2.15.10"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8",
+    "vue-template-compiler": "^2.6.14",
+    "sass": "^1.54.0",
+    "sass-loader": "^13.0.2"
+  }
+}
